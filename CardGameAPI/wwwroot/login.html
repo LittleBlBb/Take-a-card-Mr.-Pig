@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тестовая авторизация - CardGameAPI</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+        .token-display {
+            word-break: break-all;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        .actions button {
+            flex: 1;
+        }
+        .test-btn {
+            background-color: #2ecc71;
+        }
+        .test-btn:hover {
+            background-color: #27ae60;
+        }
+        .logout-btn {
+            background-color: #e74c3c;
+        }
+        .logout-btn:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Тестовая авторизация</h1>
+        
+        <div id="loginForm">
+            <div class="form-group">
+                <label for="username">Логин:</label>
+                <input type="text" id="username" placeholder="Введите ваш логин" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Пароль:</label>
+                <input type="password" id="password" placeholder="Введите ваш пароль" required>
+            </div>
+            
+            <button id="loginBtn" type="button">Войти</button>
+            <button id="registerBtn" type="button">Регистрация</button>
+        </div>
+        
+        <div id="result" class="result"></div>
+        
+        <div id="protectedActions" class="actions" style="display: none;">
+            <button id="testRequestBtn" class="test-btn" type="button">Тест API</button>
+            <button id="logoutBtn" class="logout-btn" type="button">Выйти</button>
+        </div>
+        
+        <div id="tokenInfo" style="display: none; margin-top: 20px;">
+            <h3>Текущий токен:</h3>
+            <div id="tokenDisplay" class="token-display"></div>
+        </div>
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('loginForm');
+        const loginBtn = document.getElementById('loginBtn');
+        const registerBtn = document.getElementById('registerBtn');
+        const testRequestBtn = document.getElementById('testRequestBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const resultDiv = document.getElementById('result');
+        const protectedActions = document.getElementById('protectedActions');
+        const tokenInfo = document.getElementById('tokenInfo');
+        const tokenDisplay = document.getElementById('tokenDisplay');
+        
+        checkAuthStatus();
+        
+        loginBtn.addEventListener('click', login);
+        registerBtn.addEventListener('click', register);
+        testRequestBtn.addEventListener('click', testProtectedRequest);
+        logoutBtn.addEventListener('click', logout);
+        
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                showResult('Пожалуйста, заполните все поля', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || 'Ошибка авторизации');
+                }
+                
+                const data = await response.json();
+                localStorage.setItem('jwt', data.token);
+                showResult('Успешная авторизация!', 'success');
+                checkAuthStatus();
+            } catch (error) {
+                showResult(`Ошибка: ${error.message}`, 'error');
+            }
+        }
+        
+        async function register() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                showResult('Пожалуйста, заполните все поля', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || 'Ошибка регистрации');
+                }
+                
+                showResult('Успешная регистрация! Теперь вы можете войти.', 'success');
+            } catch (error) {
+                showResult(`Ошибка: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testProtectedRequest() {
+            const token = localStorage.getItem('jwt');
+            if (!token) {
+                showResult('Токен не найден', 'error');
+                return;
+            }
+
+            try {
+                const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+                const userId = parseInt(tokenPayload.sub);
+                
+                const requestBody = {
+                    userId: userId,
+                    difficulty: 1
+                };
+
+                console.log("Отправляемые данные:", requestBody);
+
+                const response = await fetch('/api/sessions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                if (!response.ok) {
+                    const errorDetails = await response.json();
+                    console.error("Детали ошибки:", errorDetails);
+                    
+                    let errorMessage = 'Ошибка валидации';
+                    if (errorDetails.errors) {
+                        errorMessage = Object.values(errorDetails.errors)
+                            .flatMap(err => err)
+                            .join(', ');
+                    }
+                    throw new Error(errorMessage);
+                }
+                
+                const sessionData = await response.json();
+                showResult(`Сессия создана! ID: ${sessionData.id}`, 'success');
+                
+            } catch (error) {
+                console.error("Полная ошибка:", error);
+                showResult(`Ошибка: ${error.message}`, 'error');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('jwt');
+            showResult('Вы вышли из системы', 'success');
+            checkAuthStatus();
+        }
+        
+        function checkAuthStatus() {
+            const token = localStorage.getItem('jwt');
+            if (token) {
+                protectedActions.style.display = 'flex';
+                tokenInfo.style.display = 'block';
+                tokenDisplay.textContent = token;
+            } else {
+                protectedActions.style.display = 'none';
+                tokenInfo.style.display = 'none';
+            }
+        }
+        
+        function showResult(message, type) {
+            resultDiv.textContent = message;
+            resultDiv.className = `result ${type}`;
+        }
+    </script>
+</body>
+</html>
