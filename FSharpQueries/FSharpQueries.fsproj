@@ -6,11 +6,13 @@
   <ItemGroup>
     <Compile Include="DbConnection.fs" />
     <Compile Include="UserStats.fs" />
+    <Compile Include="AdvancedStats.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.66" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.5" />
+    <PackageReference Include="Npgsql" Version="9.0.3" />
     <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.11" />
     <PackageReference Include="SQLitePCLRaw.bundle_sqlite3" Version="2.1.11" />
     <PackageReference Include="SQLitePCLRaw.core" Version="2.1.11" />

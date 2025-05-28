@@ -1,8 +1,7 @@
 module DbConnection
+open Npgsql
 
-open Microsoft.Data.Sqlite
+let connString =
+    "Host=localhost;Port=5432;Database=Game;Username=postgres;Password=postgres"
 
-let getConnection () =
-    let conn = new SqliteConnection("Data Source=../Database/game.db")
-    conn.Open()
-    conn
+let connection () = new NpgsqlConnection(connString)

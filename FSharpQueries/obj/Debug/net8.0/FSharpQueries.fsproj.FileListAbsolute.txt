@@ -57,3 +57,6 @@ C:\Users\rafae\Desktop\3_kurs\6-семестр\Крам-ФунИлогПрог\t
 C:\Users\rafae\Desktop\3_kurs\6-семестр\Крам-ФунИлогПрог\team_game\Take-a-card-Mr.-Pig\FSharpQueries\obj\Debug\net8.0\FSharpQueries.pdb
 C:\Users\rafae\Desktop\3_kurs\6-семестр\Крам-ФунИлогПрог\team_game\Take-a-card-Mr.-Pig\FSharpQueries\obj\Debug\net8.0\FSharpQueries.genruntimeconfig.cache
 C:\Users\rafae\Desktop\3_kurs\6-семестр\Крам-ФунИлогПрог\team_game\Take-a-card-Mr.-Pig\FSharpQueries\obj\Debug\net8.0\ref\FSharpQueries.dll
+C:\Users\rafae\Desktop\3_kurs\6-семестр\Крам-ФунИлогПрог\team_game\Take-a-card-Mr.-Pig\FSharpQueries\bin\Debug\net8.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\Users\rafae\Desktop\3_kurs\6-семестр\Крам-ФунИлогПрог\team_game\Take-a-card-Mr.-Pig\FSharpQueries\bin\Debug\net8.0\Microsoft.Extensions.Logging.Abstractions.dll
+C:\Users\rafae\Desktop\3_kurs\6-семестр\Крам-ФунИлогПрог\team_game\Take-a-card-Mr.-Pig\FSharpQueries\bin\Debug\net8.0\Npgsql.dll

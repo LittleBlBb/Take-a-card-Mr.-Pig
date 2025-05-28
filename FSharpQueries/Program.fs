@@ -1,16 +1,29 @@
-open System
 open UserStats
+open AdvancedStats
 
 [<EntryPoint>]
-let main argv =
-    SQLitePCL.Batteries_V2.Init()
+let main _ =
+    // FR 3.1
+    printfn "=== Wins / Losses ==="
+    getUserWinsAndLosses ()
+    |> List.iter (fun x -> printfn "%-10s %d wins / %d losses" x.Username x.Wins x.Losses)
 
-    let userId = 1
-    let stats = getUserWinsAndLosses userId
-    printfn "Победы/Поражения:"
-    for s in stats do
-        printfn "  %s: %d" s.Winner s.Count
+    printfn "\n=== Avg moves per session ==="
+    getAvgMovesPerSession ()
+    |> List.iter (fun x -> printfn "%-10s %.2f moves" x.Username x.AvgMoves)
 
-    let avg = getAvgMovesPerSession userId
-    printfn "Среднее количество ходов: %f" avg
+    // FR 3.3
+    printfn "\n=== Win-rate by difficulty (testuser) ==="
+    getWinRateByDifficulty "testuser"
+    |> List.iter (fun x ->
+        printfn "D:%d  %d/%d  (%.1f%%)" x.Difficulty x.Wins x.Total x.Percent)
+
+    
+
+    printfn "\nMost popular rank (testuser):"
+    match getMostRequestedRank "testuser" with
+    | None   -> printfn "нет данных"
+    | Some r -> printfn "%s  (%d раз)" r.Rank r.C
+
+
     0

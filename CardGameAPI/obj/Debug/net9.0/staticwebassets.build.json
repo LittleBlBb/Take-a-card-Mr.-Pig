@@ -1,0 +1,362 @@
+{
+  "Version": 1,
+  "Hash": "WRTYy1/g3v/fEC+b4S/o0K6gW//tofPNcYLQ08jWedE=",
+  "Source": "CardGameAPI",
+  "BasePath": "_content/CardGameAPI",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "CardGameAPI\\wwwroot",
+      "Source": "CardGameAPI",
+      "ContentRoot": "C:\\Users\\rafae\\Desktop\\3_kurs\\6-семестр\\Крам-ФунИлогПрог\\team_game\\Take-a-card-Mr.-Pig\\CardGameAPI\\wwwroot\\",
+      "BasePath": "_content/CardGameAPI",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "C:\\Users\\rafae\\Desktop\\3_kurs\\6-семестр\\Крам-ФунИлогПрог\\team_game\\Take-a-card-Mr.-Pig\\CardGameAPI\\obj\\Debug\\net9.0\\compressed\\rf5knbj2dr-tqe64kxke1.gz",
+      "SourceId": "CardGameAPI",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\rafae\\Desktop\\3_kurs\\6-семестр\\Крам-ФунИлогПрог\\team_game\\Take-a-card-Mr.-Pig\\CardGameAPI\\obj\\Debug\\net9.0\\compressed\\",
+      "BasePath": "_content/CardGameAPI",
+      "RelativePath": "login#[.{fingerprint=tqe64kxke1}]?.html.gz",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "C:\\Users\\rafae\\Desktop\\3_kurs\\6-семестр\\Крам-ФунИлогПрог\\team_game\\Take-a-card-Mr.-Pig\\CardGameAPI\\wwwroot\\login.html",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "Fingerprint": "zw24idpc9g",
+      "Integrity": "wx3X8u7ONUZ9sITPrlWDlFSrn28u+xIJPMSe9v4iNX8=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "C:\\Users\\rafae\\Desktop\\3_kurs\\6-семестр\\Крам-ФунИлогПрог\\team_game\\Take-a-card-Mr.-Pig\\CardGameAPI\\wwwroot\\login.html"
+    },
+    {
+      "Identity": "C:\\Users\\rafae\\Desktop\\3_kurs\\6-семестр\\Крам-ФунИлогПрог\\team_game\\Take-a-card-Mr.-Pig\\CardGameAPI\\wwwroot\\login.html",
+      "SourceId": "CardGameAPI",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\rafae\\Desktop\\3_kurs\\6-семестр\\Крам-ФунИлогПрог\\team_game\\Take-a-card-Mr.-Pig\\CardGameAPI\\wwwroot\\",
+      "BasePath": "_content/CardGameAPI",
+      "RelativePath": "login#[.{fingerprint}]?.html",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "tqe64kxke1",
+      "Integrity": "JfTPILkc+kEHzkrQCVA+gcF5Jn3txnoQfU0e+ygum8g=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\login.html"
+    }
+  ],
+  "Endpoints": [
+    {
+      "Route": "login.html",
+      "AssetFile": "C:\\Users\\rafae\\Desktop\\3_kurs\\6-семестр\\Крам-ФунИлогПрог\\team_game\\Take-a-card-Mr.-Pig\\CardGameAPI\\obj\\Debug\\net9.0\\compressed\\rf5knbj2dr-tqe64kxke1.gz",
+      "Selectors": [
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip",
+          "Quality": "0.000401767778"
+        }
+      ],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2488"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"wx3X8u7ONUZ9sITPrlWDlFSrn28u+xIJPMSe9v4iNX8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 19 May 2025 19:58:58 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "W/\"JfTPILkc+kEHzkrQCVA+gcF5Jn3txnoQfU0e+ygum8g=\""
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-JfTPILkc+kEHzkrQCVA+gcF5Jn3txnoQfU0e+ygum8g="
+        }
+      ]
+    },
+    {
+      "Route": "login.html",
+      "AssetFile": "C:\\Users\\rafae\\Desktop\\3_kurs\\6-семестр\\Крам-ФунИлогПрог\\team_game\\Take-a-card-Mr.-Pig\\CardGameAPI\\wwwroot\\login.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "10464"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"JfTPILkc+kEHzkrQCVA+gcF5Jn3txnoQfU0e+ygum8g=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 19 May 2025 19:58:58 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-JfTPILkc+kEHzkrQCVA+gcF5Jn3txnoQfU0e+ygum8g="
+        }
+      ]
+    },
+    {
+      "Route": "login.html.gz",
+      "AssetFile": "C:\\Users\\rafae\\Desktop\\3_kurs\\6-семестр\\Крам-ФунИлогПрог\\team_game\\Take-a-card-Mr.-Pig\\CardGameAPI\\obj\\Debug\\net9.0\\compressed\\rf5knbj2dr-tqe64kxke1.gz",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2488"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"wx3X8u7ONUZ9sITPrlWDlFSrn28u+xIJPMSe9v4iNX8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 19 May 2025 19:58:58 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-wx3X8u7ONUZ9sITPrlWDlFSrn28u+xIJPMSe9v4iNX8="
+        }
+      ]
+    },
+    {
+      "Route": "login.tqe64kxke1.html",
+      "AssetFile": "C:\\Users\\rafae\\Desktop\\3_kurs\\6-семестр\\Крам-ФунИлогПрог\\team_game\\Take-a-card-Mr.-Pig\\CardGameAPI\\obj\\Debug\\net9.0\\compressed\\rf5knbj2dr-tqe64kxke1.gz",
+      "Selectors": [
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip",
+          "Quality": "0.000401767778"
+        }
+      ],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2488"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"wx3X8u7ONUZ9sITPrlWDlFSrn28u+xIJPMSe9v4iNX8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 19 May 2025 19:58:58 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "W/\"JfTPILkc+kEHzkrQCVA+gcF5Jn3txnoQfU0e+ygum8g=\""
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "tqe64kxke1"
+        },
+        {
+          "Name": "label",
+          "Value": "login.html"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-JfTPILkc+kEHzkrQCVA+gcF5Jn3txnoQfU0e+ygum8g="
+        }
+      ]
+    },
+    {
+      "Route": "login.tqe64kxke1.html",
+      "AssetFile": "C:\\Users\\rafae\\Desktop\\3_kurs\\6-семестр\\Крам-ФунИлогПрог\\team_game\\Take-a-card-Mr.-Pig\\CardGameAPI\\wwwroot\\login.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "10464"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"JfTPILkc+kEHzkrQCVA+gcF5Jn3txnoQfU0e+ygum8g=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 19 May 2025 19:58:58 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "tqe64kxke1"
+        },
+        {
+          "Name": "label",
+          "Value": "login.html"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-JfTPILkc+kEHzkrQCVA+gcF5Jn3txnoQfU0e+ygum8g="
+        }
+      ]
+    },
+    {
+      "Route": "login.tqe64kxke1.html.gz",
+      "AssetFile": "C:\\Users\\rafae\\Desktop\\3_kurs\\6-семестр\\Крам-ФунИлогПрог\\team_game\\Take-a-card-Mr.-Pig\\CardGameAPI\\obj\\Debug\\net9.0\\compressed\\rf5knbj2dr-tqe64kxke1.gz",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2488"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"wx3X8u7ONUZ9sITPrlWDlFSrn28u+xIJPMSe9v4iNX8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 19 May 2025 19:58:58 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "tqe64kxke1"
+        },
+        {
+          "Name": "label",
+          "Value": "login.html.gz"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-wx3X8u7ONUZ9sITPrlWDlFSrn28u+xIJPMSe9v4iNX8="
+        }
+      ]
+    }
+  ]
+}

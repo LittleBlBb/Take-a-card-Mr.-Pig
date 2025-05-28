@@ -10,7 +10,7 @@ open System.Reflection
 [<assembly: System.Reflection.AssemblyCompanyAttribute("FSharpQueries")>]
 [<assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")>]
 [<assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")>]
-[<assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a58653f703e56dc0792c99594c0c3675fb8e922a")>]
+[<assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+17b81f84170641f98defa67d3a55f2604b968d7e")>]
 [<assembly: System.Reflection.AssemblyProductAttribute("FSharpQueries")>]
 [<assembly: System.Reflection.AssemblyTitleAttribute("FSharpQueries")>]
 [<assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")>]

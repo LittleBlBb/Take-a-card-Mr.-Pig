@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "F9u9y8OpxM8=",
+  "dgSpecHash": "aiZXLYiaabM=",
   "success": true,
   "projectFilePath": "C:\\Users\\rafae\\Desktop\\3_kurs\\6-семестр\\Крам-ФунИлогПрог\\team_game\\Take-a-card-Mr.-Pig\\FSharpQueries\\FSharpQueries.fsproj",
   "expectedPackageFiles": [
@@ -8,6 +8,9 @@
     "C:\\Users\\rafae\\.nuget\\packages\\fsharp.core\\9.0.201\\fsharp.core.9.0.201.nupkg.sha512",
     "C:\\Users\\rafae\\.nuget\\packages\\microsoft.data.sqlite\\9.0.5\\microsoft.data.sqlite.9.0.5.nupkg.sha512",
     "C:\\Users\\rafae\\.nuget\\packages\\microsoft.data.sqlite.core\\9.0.5\\microsoft.data.sqlite.core.9.0.5.nupkg.sha512",
+    "C:\\Users\\rafae\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.2\\microsoft.extensions.dependencyinjection.abstractions.8.0.2.nupkg.sha512",
+    "C:\\Users\\rafae\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\8.0.2\\microsoft.extensions.logging.abstractions.8.0.2.nupkg.sha512",
+    "C:\\Users\\rafae\\.nuget\\packages\\npgsql\\9.0.3\\npgsql.9.0.3.nupkg.sha512",
     "C:\\Users\\rafae\\.nuget\\packages\\sqlitepclraw.bundle_e_sqlite3\\2.1.11\\sqlitepclraw.bundle_e_sqlite3.2.1.11.nupkg.sha512",
     "C:\\Users\\rafae\\.nuget\\packages\\sqlitepclraw.bundle_sqlite3\\2.1.11\\sqlitepclraw.bundle_sqlite3.2.1.11.nupkg.sha512",
     "C:\\Users\\rafae\\.nuget\\packages\\sqlitepclraw.core\\2.1.11\\sqlitepclraw.core.2.1.11.nupkg.sha512",
