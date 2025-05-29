@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 
 namespace CardGameAPI.Models;
 
@@ -13,16 +12,8 @@ public class Session
     public string? Winner { get; set; }
     public int PlayerScore { get; set; }
     public int BotScore { get; set; }
-    public int Difficulty { get; set; } = 1; // // 0-Easy, 1-Medium, 2-Hard, 3-Expert
+    public int Difficulty { get; set; } = 1;
+    public string? PlayerHand { get; set; }
+    public string? BotHand { get; set; }
     public List<Move>? Moves { get; set; }
-}
-
-public class CreateSessionDto
-{
-    [Required]
-    public int UserId { get; set; }
-    
-    [Required]
-    [Range(0, 3)] 
-    public int Difficulty { get; set; } = 1; 
 }

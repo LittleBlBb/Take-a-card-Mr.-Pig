@@ -8,11 +8,11 @@ public class Move
     public int SessionId { get; set; }
     public Session? Session { get; set; }
     public int MoveNumber { get; set; }
-    
+
     [Required]
     [StringLength(10)]
-    public required string PlayerRequest { get; set; } 
-    
+    public required string PlayerRequest { get; set; }
+
     public bool Success { get; set; }
 }
 

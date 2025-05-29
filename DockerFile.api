@@ -1,0 +1,14 @@
+# Сборка
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+COPY CardGameAPI/CardGameAPI.csproj .
+RUN dotnet restore
+COPY CardGameAPI .
+RUN dotnet publish -c Release -o /app/publish
+
+# Запуск
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+WORKDIR /app
+COPY --from=build /app/publish .
+EXPOSE 5211
+ENTRYPOINT ["dotnet", "CardGameAPI.dll"]

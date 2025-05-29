@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
-using CardGameAPI.Models;
 using CardGameAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Net.Http.Json;
 using System.Text.Json;
-
+using System.ComponentModel.DataAnnotations;
+using CardGameAPI.Models;
 namespace CardGameAPI.Controllers;
 
 [ApiController]
@@ -14,13 +14,22 @@ public class SessionsController : ControllerBase
     private readonly GameContext _context;
     private readonly HttpClient _prologClient;
 
+    public class CreateSessionDto
+    {
+        [Required]
+        public int UserId { get; set; }
+
+        [Required]
+        [Range(0, 3)]
+        public int Difficulty { get; set; } = 1;
+    }
+
     public SessionsController(GameContext context, IHttpClientFactory clientFactory)
     {
         _context = context;
         _prologClient = clientFactory.CreateClient("Prolog");
     }
 
-  
     [HttpPost]
     public async Task<IActionResult> CreateSession([FromBody] CreateSessionDto dto)
     {
@@ -32,46 +41,41 @@ public class SessionsController : ControllerBase
                     e => e.Key,
                     e => e.Value.Errors.Select(error => error.ErrorMessage).ToArray()
                 );
-            
-            Console.WriteLine($"Ошибки валидации: {JsonSerializer.Serialize(errors)}");
-            return BadRequest(new { 
-                Title = "Validation failed",
-                Errors = errors 
-            });
+            return BadRequest(new { Title = "Validation failed", Errors = errors });
         }
 
-        // Проверка пользователя
         var user = await _context.Users.FindAsync(dto.UserId);
         if (user == null) return NotFound("User not found");
 
-        string difficultyName = dto.Difficulty switch
-        {
-            0 => "easy",
-            1 => "medium",
-            2 => "hard",
-            3 => "expert",
-            _ => "medium" 
-         };
-
-        // Интеграция с Prolog
         var prologResponse = await _prologClient.PostAsJsonAsync(
-            "set_difficulty", 
-            new { difficulty = dto.Difficulty.ToString().ToLower() });
-        
+            "set_difficulty",
+            new
+            {
+                difficulty = dto.Difficulty switch
+                {
+                    0 => "easy",
+                    1 => "medium",
+                    2 => "hard",
+                    3 => "expert",
+                    _ => "medium"
+                }
+            });
+
         if (!prologResponse.IsSuccessStatusCode)
             return BadRequest("Failed to set difficulty in Prolog service");
 
-        // Создание сессии
-        var session = new Session 
-        { 
+        var prologResult = await prologResponse.Content.ReadFromJsonAsync<PrologDifficultyResponse>();
+        if (prologResult == null || prologResult.Result == "error")
+            return BadRequest(prologResult?.Message ?? "Prolog error");
+
+        var session = new Session
+        {
             UserId = dto.UserId,
             Difficulty = dto.Difficulty
         };
 
         _context.Sessions.Add(session);
         await _context.SaveChangesAsync();
-
-        // UI должен отправляет POST-запрос на этот эндпоинт для создания сессии
 
         return Ok(session);
     }
@@ -82,11 +86,34 @@ public class SessionsController : ControllerBase
         var session = await _context.Sessions
             .Include(s => s.Moves)
             .FirstOrDefaultAsync(s => s.Id == id);
+        if (session == null) return NotFound();
 
-        // Вызов Prolog GET /status для текущего состояния игры
-        // UI должен вызывает этот эндпоинт для отображения сессии
+        var prologResponse = await _prologClient.GetAsync("status");
+        if (!prologResponse.IsSuccessStatusCode)
+            return BadRequest("Failed to get game status from Prolog");
 
-        return session == null ? NotFound() : Ok(session);
+        var prologStatus = await prologResponse.Content.ReadFromJsonAsync<PrologStatusResponse>();
+        if (prologStatus == null) return BadRequest("Invalid Prolog response");
+
+        session.PlayerHand = JsonSerializer.Serialize(prologStatus.PlayerHand);
+        session.BotHand = JsonSerializer.Serialize(prologStatus.PlayerHand);
+        session.PlayerScore = prologStatus.PlayerScore;
+        session.BotScore = prologStatus.BotScore;
+        if (prologStatus.Winner != null)
+            session.Winner = prologStatus.Winner;
+
+        await _context.SaveChangesAsync();
+
+        return Ok(new
+        {
+            Session = session,
+            PlayerHand = prologStatus.PlayerHand,
+            BotHandLength = prologStatus.BotHandLength,
+            PlayerScore = prologStatus.PlayerScore,
+            BotScore = prologStatus.BotScore,
+            Turn = prologStatus.Turn,
+            Winner = prologStatus.Winner
+        });
     }
 
     [HttpPost("{id}/terminate")]
@@ -95,13 +122,40 @@ public class SessionsController : ControllerBase
         var session = await _context.Sessions.FindAsync(id);
         if (session == null) return NotFound();
 
-        // Prolog для получения текущих рук и очков перед завершением
+        var prologResponse = await _prologClient.GetAsync("status");
+        if (prologResponse.IsSuccessStatusCode)
+        {
+            var prologStatus = await prologResponse.Content.ReadFromJsonAsync<PrologStatusResponse>();
+            if (prologStatus != null)
+            {
+                session.PlayerHand = JsonSerializer.Serialize(prologStatus.PlayerHand);
+                session.BotHand = JsonSerializer.Serialize(prologStatus.PlayerHand);
+                session.PlayerScore = prologStatus.PlayerScore;
+                session.BotScore = prologStatus.BotScore;
+                session.Winner = prologStatus.Winner ?? (prologStatus.PlayerScore > prologStatus.BotScore ? "player" :
+                                prologStatus.PlayerScore < prologStatus.BotScore ? "bot" : "draw");
+            }
+        }
 
         session.EndTime = DateTime.UtcNow;
         await _context.SaveChangesAsync();
 
-        // UI должен вызывает этот эндпоинт для завершения сессии
-
         return NoContent();
     }
+}
+
+public class PrologDifficultyResponse
+{
+    public string Result { get; set; } = string.Empty;
+    public string? Message { get; set; }
+}
+
+public class PrologStatusResponse
+{
+    public List<Card> PlayerHand { get; set; } = new List<Card>();
+    public int BotHandLength { get; set; }
+    public int PlayerScore { get; set; }
+    public int BotScore { get; set; }
+    public string Turn { get; set; } = string.Empty;
+    public string? Winner { get; set; }
 }

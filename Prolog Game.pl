@@ -6,7 +6,12 @@
 % Вывод в консоль: на английском языке
 % Комментарии: на русском
 
-:- dynamic hand/2, score/2, turn/1, difficulty/1, deck/1.
+:- use_module(library(http/thread_httpd)).
+:- use_module(library(http/http_dispatch)).
+:- use_module(library(http/http_json)).
+
+% Динамические предикаты для хранения состояния игры
+:- dynamic hand/2, score/2, turn/1, difficulty/1, deck/1, memory/2.
 
 % Определение рангов и мастей
 ranks([ace, two, three, four, five, six, seven, eight, nine, ten, jack, queen, king]).
@@ -18,7 +23,8 @@ init_deck :-
     ranks(Ranks),
     suits(Suits),
     findall(card(Rank, Suit), (member(Rank, Ranks), member(Suit, Suits)), Deck),
-    assert(deck(Deck)).
+    random_permutation(Deck, ShuffledDeck),
+    assert(deck(ShuffledDeck)).
 
 % Получение N случайных карт из колоды
 draw_cards(N, Cards) :-
@@ -37,7 +43,7 @@ init_game :-
     retractall(hand(_, _)),
     retractall(score(_, _)),
     retractall(turn(_)),
-    retractall(difficulty(_)),
+    retractall(memory(_, _)),
     init_deck,
     draw_cards(7, PlayerHand),
     draw_cards(7, BotHand),
@@ -46,19 +52,7 @@ init_game :-
     assert(score(player, 0)),
     assert(score(bot, 0)),
     random(0, 2, Turn),
-    (Turn = 0 -> assert(turn(player)) ; assert(turn(bot))),
-    assert(difficulty(easy)).
-
-% Отображение руки игрока
-show_hand(Player) :-
-    hand(Player, Hand),
-    write('Your hand:'), nl,
-    (Hand = [] -> write('Empty') ; maplist(write_card, Hand)),
-    nl.
-
-% Форматирование карты для вывода
-write_card(card(Rank, Suit)) :-
-    format('~w of ~w~n', [Rank, Suit]).
+    (Turn = 0 -> assert(turn(player)) ; assert(turn(bot))).
 
 % Проверка набора из 4 карт одного ранга
 check_set(Player, Rank) :-
@@ -73,8 +67,7 @@ check_set(Player, Rank) :-
         subtract(Hand, Cards, NewHand),
         retract(hand(Player, Hand)),
         assert(hand(Player, NewHand)),
-        format('~w completed a set (~w)! Point added. Score: ~w~n', [Player, Rank, NewScore]),
-        (NewScore = 5 -> end_game(Player) ; true)
+        (NewScore = 5 -> assert(winner(Player)) ; true)
     ; true).
 
 % Передача карт от одного игрока другому
@@ -90,42 +83,45 @@ transfer_cards(Rank, From, To) :-
         append(ToHand, Cards, NewToHand),
         retract(hand(To, ToHand)),
         assert(hand(To, NewToHand)),
-        format('~w gave ~w ~w card(s) of rank ~w~n', [From, To, NumCards, Rank]),
         check_set(To, Rank),
         true
-    ; 
-        false).
+    ; false).
 
 % Взятие карты из колоды при неудачном запросе
 draw_from_deck(Player) :-
     draw_cards(1, Cards),
-    (Cards = [card(Rank, Suit)] ->
+    (Cards = [Card] ->
         hand(Player, Hand),
         append(Hand, Cards, NewHand),
         retract(hand(Player, Hand)),
         assert(hand(Player, NewHand)),
-        format('~w drew ~w of ~w~n', [Player, Rank, Suit]),
+        Card = card(Rank, _),
         check_set(Player, Rank)
-    ; 
-        format('Deck is empty! No card drawn.~n', [])).
+    ; true).
+
+% Запоминание хода (FR1.6)
+store_memory(Player, Rank) :-
+    assert(memory(Player, Rank)).
 
 % Запрос карты
-request_card(Player, Opponent, Rank, Result) :-
+request_card(Player, Opponent, Rank, EnableMemory, Result) :-
     hand(Player, Hand),
     (Hand \= [] ->
-        (member(card(Rank, _), Hand) ->
-            (transfer_cards(Rank, Opponent, Player) ->
-                Result = continue
+        ranks(Ranks),
+        (member(Rank, Ranks) ->
+            (member(card(Rank, _), Hand) ->
+                (EnableMemory -> store_memory(Player, Rank) ; true),
+                (transfer_cards(Rank, Opponent, Player) ->
+                    Result = continue
+                ; 
+                    draw_from_deck(Player),
+                    Result = switch)
             ; 
-                format('~w has no cards of rank ~w.~n', [Opponent, Rank]),
-                draw_from_deck(Player),
-                Result = switch)
+                Result = retry)
         ; 
-            format('You do not have rank ~w in your hand! Try again.~n', [Rank]),
-            Result = retry)
+            Result = invalid_rank)
     ; 
-        format('~w has no cards! Turn passes.~n', [Player]),
-        Result = switch).
+        Result = no_cards).
 
 % Смена хода
 switch_turn(Player, Opponent) :-
@@ -138,10 +134,8 @@ bot_move_easy(Bot, Player, Result) :-
     (Hand \= [] ->
         findall(Rank, member(card(Rank, _), Hand), Ranks),
         random_member(Rank, Ranks),
-        format('Bot requests: ~w~n', [Rank]),
-        request_card(Bot, Player, Rank, Result)
+        request_card(Bot, Player, Rank, false, Result)
     ; 
-        format('Bot has no cards! Turn passes.~n', []),
         Result = switch).
 
 % Ход бота (сложный уровень: выбор ранга с максимумом карт)
@@ -153,10 +147,8 @@ bot_move_hard(Bot, Player, Result) :-
                 RankCounts),
         sort(2, @>=, RankCounts, Sorted),
         Sorted = [BestRank-_|_],
-        format('Bot requests: ~w~n', [BestRank]),
-        request_card(Bot, Player, BestRank, Result)
+        request_card(Bot, Player, BestRank, false, Result)
     ; 
-        format('Bot has no cards! Turn passes.~n', []),
         Result = switch).
 
 % Ход бота в зависимости от сложности
@@ -164,56 +156,51 @@ bot_move(Bot, Player, Result) :-
     difficulty(Difficulty),
     (Difficulty = easy -> bot_move_easy(Bot, Player, Result) ; bot_move_hard(Bot, Player, Result)).
 
-% Завершение игры
-end_game(Winner) :-
-    score(Winner, 5),
-    format('Game over! ~w wins!~n', [Winner]).
+% HTTP: Запуск сервера
+start_server(Port) :-
+    http_server(http_dispatch, [port(Port)]).
 
-% Основной игровой цикл
-game_loop :-
-    turn(Player),
+% HTTP: Маршруты
+:- http_handler('/set_difficulty', handle_set_difficulty, []).
+:- http_handler('/move', handle_move, []).
+:- http_handler('/status', handle_status, []).
+
+% HTTP: Установка сложности
+handle_set_difficulty(Request) :-
+    http_read_json_dict(Request, Data),
+    Difficulty = Data.difficulty,
+    member(Difficulty, [easy, medium, hard, expert]),
+    retractall(difficulty(_)),
+    assert(difficulty(Difficulty)),
+    init_game,
+    reply_json_dict(_{result: "success", difficulty: Difficulty}).
+
+% HTTP: Обработка хода
+handle_move(Request) :-
+    http_read_json_dict(Request, Data),
+    Rank = Data.rank,
+    EnableMemory = Data.enable_memory,
+    turn(player),
+    request_card(player, bot, Rank, EnableMemory, Result),
+    (Result = switch -> switch_turn(player, bot) ; true),
+    hand(player, PlayerHand),
+    hand(bot, BotHand),
     score(player, PlayerScore),
     score(bot, BotScore),
-    format('Score: Player - ~w, Bot - ~w~n', [PlayerScore, BotScore]),
-    (Player = player ->
-        show_hand(player),
-        player_move(Result),
-        (Result = continue -> game_loop ;
-         Result = switch -> switch_turn(player, bot), game_loop ;
-         game_loop) % retry
-    ; 
-        bot_move(bot, player, Result),
-        (Result = continue -> game_loop ;
-         Result = switch -> switch_turn(bot, player), game_loop)).
+    (winner(Winner) -> WinnerStatus = Winner ; WinnerStatus = null),
+    reply_json_dict(_{result: Result, player_hand: PlayerHand, bot_hand_length: length(BotHand), 
+                     player_score: PlayerScore, bot_score: BotScore, winner: WinnerStatus}).
 
-% Ход игрока
-player_move(Result) :-
-    write('Enter rank (ace, two, ..., king): '),
-    read(Rank),
-    ranks(Ranks),
-    (member(Rank, Ranks) ->
-        request_card(player, bot, Rank, Result)
-    ; 
-        write('Invalid rank! Try again.'), nl,
-        Result = retry).
+% HTTP: Получение статуса игры
+handle_status(_Request) :-
+    hand(player, PlayerHand),
+    hand(bot, BotHand),
+    score(player, PlayerScore),
+    score(bot, BotScore),
+    turn(Turn),
+    (winner(Winner) -> WinnerStatus = Winner ; WinnerStatus = null),
+    reply_json_dict(_{player_hand: PlayerHand, bot_hand_length: length(BotHand), 
+                     player_score: PlayerScore, bot_score: BotScore, turn: Turn, winner: WinnerStatus}).
 
-% Установка уровня сложности
-set_difficulty(Level) :-
-    member(Level, [easy, hard]),
-    retractall(difficulty(_)),
-    assert(difficulty(Level)),
-    format('Difficulty set to: ~w~n', [Level]).
-
-% Запуск игры
-play :-
-    write('Welcome to "Take a Card, Mr. Pig"!'), nl,
-    write('Choose difficulty (easy/hard): '),
-    read(Difficulty),
-    (set_difficulty(Difficulty) ->
-        init_game,
-        turn(First),
-        format('First turn: ~w~n', [First]),
-        game_loop
-    ; 
-        write('Invalid difficulty! Try again (easy/hard).'), nl,
-        play).
+% Запуск сервера на порту 8080
+:- initialization(start_server(8080)).

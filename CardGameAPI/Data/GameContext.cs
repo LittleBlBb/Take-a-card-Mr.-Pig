@@ -13,16 +13,24 @@ public class GameContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // Уникальность username
         modelBuilder.Entity<User>()
             .HasIndex(u => u.Username)
             .IsUnique();
 
-        // Автоматическое время для сессии
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.RefreshToken)
+            .IsUnique();
+
         modelBuilder.Entity<Session>()
             .Property(s => s.StartTime)
             .HasDefaultValueSql("NOW()");
 
-        // необходимо добавить поля в Session для хранения рук и очков от Prolog (FR1.7, FR2.7)
+        modelBuilder.Entity<Session>()
+            .Property(s => s.PlayerHand)
+            .HasColumnType("jsonb");
+
+        modelBuilder.Entity<Session>()
+            .Property(s => s.BotHand)
+            .HasColumnType("jsonb");
     }
 }

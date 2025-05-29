@@ -5,13 +5,16 @@ namespace CardGameAPI.Models;
 public class User
 {
     public int Id { get; set; }
-    
+
     [Required]
     [StringLength(50)]
     public required string Username { get; set; }
-    
+
     [Required]
     public required string PasswordHash { get; set; }
-    
+
+    public string? RefreshToken { get; set; }
+    public DateTime? RefreshTokenExpiryTime { get; set; }
+
     public List<Session>? Sessions { get; set; }
 }

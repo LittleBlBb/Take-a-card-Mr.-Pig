@@ -1,0 +1,51 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: CardGameDb
+      POSTGRES_USER: pguser
+      POSTGRES_PASSWORD: pgpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pguser -d CardGameDb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./CardGameAPI
+      dockerfile: ../Dockerfile.api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5211
+      ConnectionStrings__DefaultConnection: Host=db;Database=CardGameDb;Username=pguser;Password=pgpassword
+      Jwt__Key: your-very-long-and-secure-key-here-at-least-32-chars
+      Jwt__Issuer: CardGameAPI
+      Jwt__Audience: CardGameAPI
+    ports:
+      - "5211:5211"
+    depends_on:
+      db:
+        condition: service_healthy
+      prolog:
+        condition: service_started
+    volumes:
+      - ./CardGameAPI:/app
+
+  prolog:
+    build:
+      context: .
+      dockerfile: Dockerfile.prolog
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./game.pl:/app/game.pl
+
+volumes:
+  postgres_data:

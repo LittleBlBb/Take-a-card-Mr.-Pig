@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
-using CardGameAPI.Models;
 using CardGameAPI.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Http.Json;
+using System.Text.Json;
+using System.ComponentModel.DataAnnotations;
+using CardGameAPI.Models;
 
 namespace CardGameAPI.Controllers;
 
@@ -11,6 +14,15 @@ public class MovesController : ControllerBase
 {
     private readonly GameContext _context;
     private readonly HttpClient _prologClient;
+
+    public class MoveDto
+    {
+        [Required]
+        [StringLength(10)]
+        public required string Rank { get; set; }
+
+        public bool EnableMemory { get; set; }
+    }
 
     public MovesController(GameContext context, IHttpClientFactory clientFactory)
     {
@@ -25,38 +37,57 @@ public class MovesController : ControllerBase
         if (session == null || session.EndTime != null)
             return BadRequest("Invalid session");
 
-        // Запрос к Prolog
         var prologResponse = await _prologClient.PostAsJsonAsync(
-            "move", 
-            new
-            {
-                rank = dto.Rank,
-                enable_memory = dto.EnableMemory // Фича для запоминания ходов из FR1.6. Только в БД не записывается, тут Prolog-сервер должен обрабатывать enable_memory.
-            });
+            "move",
+            new { rank = dto.Rank, enable_memory = dto.EnableMemory });
 
         if (!prologResponse.IsSuccessStatusCode)
             return BadRequest("Prolog move failed");
 
-        // Сохранение хода
+        var prologResult = await prologResponse.Content.ReadFromJsonAsync<PrologMoveResponse>();
+        if (prologResult == null || prologResult.Result == "error")
+            return BadRequest(prologResult?.Message ?? "Prolog error");
+
         var moveNumber = await _context.Moves
             .Where(m => m.SessionId == sessionId)
             .CountAsync() + 1;
 
-        var move = new Move 
-        { 
+        var move = new Move
+        {
             SessionId = sessionId,
             MoveNumber = moveNumber,
             PlayerRequest = dto.Rank,
-            Success = true 
+            Success = prologResult.Result != "retry" && prologResult.Result != "invalid_rank"
         };
+
+        session.PlayerHand = JsonSerializer.Serialize(prologResult.PlayerHand);
+        session.PlayerScore = prologResult.PlayerScore;
+        session.BotScore = prologResult.BotScore;
+        if (prologResult.Winner != null)
+            session.Winner = prologResult.Winner;
 
         _context.Moves.Add(move);
         await _context.SaveChangesAsync();
 
-        // Prolog  возвращает JSON с полями result, player_hand, player_score, bot_score
-        // UI  отправляет POST-запрос на этот эндпоинт с MoveDto и отображает результат хода
-
-
-        return Ok(move);
+        return Ok(new
+        {
+            Move = move,
+            PlayerHand = prologResult.PlayerHand,
+            PlayerScore = prologResult.PlayerScore,
+            BotScore = prologResult.BotScore,
+            Result = prologResult.Result,
+            Winner = prologResult.Winner
+        });
     }
+}
+
+public class PrologMoveResponse
+{
+    public string Result { get; set; } = string.Empty;
+    public List<Card>? PlayerHand { get; set; }
+    public int BotHandLength { get; set; }
+    public int PlayerScore { get; set; }
+    public int BotScore { get; set; }
+    public string? Winner { get; set; }
+    public string? Message { get; set; }
 }
